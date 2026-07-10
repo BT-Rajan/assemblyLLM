@@ -124,6 +124,24 @@
         "P009": { name: "Lower Barrel", material: "Polycarbonate", thread_specification: "M8 x 0.75 External", downstream: [] }
     };
 
+    // Broad "what are the parts / what's it made of" questions have no single target
+    // component code and were never part of the model's training distribution (every
+    // training example asks about one specific Pxxx part - see data/train.jsonl). Rather
+    // than force those through the router and show whatever noisy guess comes out,
+    // answer them directly and instantly from the deterministic parts registry.
+    const SPECIFIC_PART_CODE = /P00[1-9]/i;
+    const LISTING_INTENT = /\b(components?|parts?|pieces|made\s*(up)?\s*of|consists?\s*of|breakdown|what.*(is|are).*(in|inside))\b/i;
+
+    function isGeneralListingQuery(text) {
+        return LISTING_INTENT.test(text) && !SPECIFIC_PART_CODE.test(text);
+    }
+
+    function renderFullPartsList(modelDiv, graphDiv) {
+        modelDiv.innerText = "[No specific component code detected in this question - it's a general listing request, so it's answered directly from the deterministic parts registry without invoking the neural router.]";
+        const lines = Object.entries(PARTS_GRAPH).map(([code, part]) => `• ${part.name} (${code})`);
+        graphDiv.innerText = `[PARTS REGISTRY] This assembly is made up of ${lines.length} components:\n\n${lines.join('\n')}`;
+    }
+
     // Initialize and boot up dependencies asynchronously 
     async function initSystem() {
         const statusDiv = document.getElementById('systemStatus');
@@ -195,6 +213,11 @@
         
         if (!inputPrompt) {
             alert("Please input an assembly engineering inquiry first.");
+            return;
+        }
+
+        if (isGeneralListingQuery(inputPrompt)) {
+            renderFullPartsList(modelDiv, graphDiv);
             return;
         }
 
@@ -281,7 +304,6 @@
             let command;
             try {
                 const rawStr = generatedJson.trim();
-                modelDiv.innerText = rawStr;
 
                 // These route objects are always flat (no nested braces), so the last '{'
                 // through the last '}' reliably isolates the real object even if the model
@@ -292,6 +314,10 @@
                     throw new Error("No JSON object boundaries found");
                 }
                 command = JSON.parse(rawStr.slice(start, end + 1));
+
+                // Show the clean, parsed route - not the model's raw stream (which can
+                // include a little leading noise before it settles into valid JSON).
+                modelDiv.innerText = JSON.stringify(command, null, 2);
             } catch (jsonErr) {
                 console.error("Malformed JSON payload string:", generatedJson);
                 modelDiv.innerText = `Raw Stream Output:\n-----------------------\n${generatedJson}\n-----------------------\n\n[Status: Truncated/Malformed JSON String]`;
