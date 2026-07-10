@@ -69,7 +69,7 @@ def get_assembly_graph_matrix():
 # ==========================================
 # 3. AUTOREGRESSIVE GENERATION LOOP
 # ==========================================
-def generate_router_token(model, tokenizer, prompt_text, max_len=64):
+def generate_router_token(model, tokenizer, prompt_text, max_len=128):
     full_prompt = f"User: {prompt_text}\nBot: "
     tokens = tokenizer.encode(full_prompt)
     
@@ -96,9 +96,15 @@ def generate_router_token(model, tokenizer, prompt_text, max_len=64):
 def execute_system_query(user_input, model, tokenizer, graph):
     # Step A: The LLM reads natural language and isolates structural intent tokens
     raw_json_token = generate_router_token(model, tokenizer, user_input)
-    
+
     try:
-        command = json.loads(raw_json_token)
+        # The model occasionally emits a little leading noise before the actual JSON
+        # object. These route objects are always flat (no nested braces), so the last
+        # '{' through the last '}' reliably isolates the real object.
+        start, end = raw_json_token.rfind("{"), raw_json_token.rfind("}")
+        if start == -1 or end == -1 or end < start:
+            raise ValueError("No JSON object boundaries found")
+        command = json.loads(raw_json_token[start:end + 1])
         action = command.get("action")
         target = command.get("target")
         

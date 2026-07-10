@@ -107,8 +107,9 @@
     let session = null;
     let vocab = {};
     let reverseVocab = {};
-    const MAX_SEQ_LEN = 256;
-    const VOCAB_SIZE = 1024; // Must align with config.py vocabulary ceiling
+    const MAX_SEQ_LEN = 256;   // Must match cfg.max_seq_len / the fixed ONNX input shape
+    const MAX_NEW_TOKENS = 128; // Generation budget per request
+    let VOCAB_SIZE = 0;        // Derived from tokenizer_vocab.json after load (actual trained size, e.g. 86 - NOT the 1024 ceiling in config.py)
 
     // Hardcoded relational lookup dictionary serving as our browser-side Ground Truth graph
     const PARTS_GRAPH = {
@@ -129,7 +130,9 @@
         const submitBtn = document.getElementById('submitBtn');
         try {
             // Step A: Load the vocabulary configuration matrix saved from training
-            const response = await fetch('../data/tokenizer_vocab.json');
+            // (kept alongside index.html so it resolves correctly whether this page is
+            // served from the repo root or as the GitHub Pages site root at /docs)
+            const response = await fetch('./tokenizer_vocab.json');
             const vocabData = await response.json();
             vocab = vocabData.stoi;
             
@@ -137,6 +140,11 @@
             for (let ch in vocab) {
                 reverseVocab[vocab[ch]] = ch;
             }
+
+            // Derive the real trained vocabulary size from the file itself. The model's
+            // lm_head output dimension is len(tokenizer.stoi) at train time (see train.py),
+            // NOT the 1024 ceiling declared in config.py - that value is only an upper bound.
+            VOCAB_SIZE = Object.keys(vocab).length;
 
             // Step B: Set up explicit path locations pointing to the model and data weights
             const modelUrl = './assembly_router.onnx';
@@ -195,54 +203,83 @@
         let generatedJson = "";
 
         try {
-            // Step 1: Wrap input prompt with our explicit training template structure
+            // Step 1: Wrap input prompt with our explicit training template structure.
+            // Strip the trailing </s> so the model is free to continue generating, matching
+            // the reference behaviour in inference.py's generate_router_token().
             const fullPrompt = `User: ${inputPrompt}\nBot: `;
             const encodedTokens = encodeText(fullPrompt);
-            
-            // Step 2: Build an Int64 static array padded with zeroes to satisfy tensor requirement
+            if (encodedTokens[encodedTokens.length - 1] === vocab["</s>"]) {
+                encodedTokens.pop();
+            }
+            const promptLength = encodedTokens.length;
+
+            // Step 2: Build an Int64 static array padded with zeroes to satisfy the model's
+            // fixed [1, 256] input shape (export_onnx.py exports without dynamic axes).
             const inputIds = new BigInt64Array(MAX_SEQ_LEN).fill(BigInt(vocab["<pad>"]));
-            for (let i = 0; i < Math.min(encodedTokens.length, MAX_SEQ_LEN); i++) {
+            for (let i = 0; i < promptLength; i++) {
                 inputIds[i] = BigInt(encodedTokens[i]);
             }
-            
-            // Step 3: Run parameters using explicit 'int64' data typing alignment
-            const inputTensor = new ort.Tensor('int64', inputIds, [1, MAX_SEQ_LEN]);
-            const feeds = { 'input_ids': inputTensor };
-            
-            const outputs = await session.run(feeds);
-            const logits = outputs.logits.data; // Raw output array block
-            
-            // Step 4: Extract predicted string tokens following input text boundary
-            let promptLength = encodedTokens.length;
-            
-            for (let i = promptLength - 1; i < MAX_SEQ_LEN; i++) {
+
+            // Step 3: Proper autoregressive decoding loop. Because the ONNX graph has a fixed
+            // sequence length, we can't grow the tensor - instead we re-run the full [1,256]
+            // forward pass on every new token, writing each freshly predicted token back into
+            // the array before the next pass. The causal attention mask means positions beyond
+            // the current cursor (still <pad>) never influence already-computed logits, so this
+            // is equivalent to true one-token-at-a-time generation.
+            //
+            // (The previous version ran a single forward pass and read logits off every
+            // position at once - but everything after the prompt was still <pad> in that same
+            // pass, a context the model never saw during training, which produced garbage. It
+            // also read logits with a hardcoded stride of 1024 when the model's real trained
+            // vocabulary is only VOCAB_SIZE entries wide, corrupting every index.)
+            let cursor = promptLength;
+            const maxCursor = Math.min(promptLength + MAX_NEW_TOKENS, MAX_SEQ_LEN);
+
+            while (cursor < maxCursor) {
+                const inputTensor = new ort.Tensor('int64', inputIds, [1, MAX_SEQ_LEN]);
+                const outputs = await session.run({ 'input_ids': inputTensor });
+                const logits = outputs.logits.data; // Raw output array block, shape [1, 256, VOCAB_SIZE]
+
+                // Logits at position (cursor - 1) predict the token that follows it, i.e. the
+                // next token at `cursor`.
                 let maxIdx = 0;
                 let maxVal = -Infinity;
-                let offset = i * VOCAB_SIZE;
-                
-                // Identify highest scoring character dimension index
+                const offset = (cursor - 1) * VOCAB_SIZE;
                 for (let v = 0; v < VOCAB_SIZE; v++) {
-                    let val = logits[offset + v];
+                    const val = logits[offset + v];
                     if (val > maxVal) {
                         maxVal = val;
                         maxIdx = v;
                     }
                 }
-                
-                // Break sequence parsing loop if terminal token markers are reached
+
+                // Stop once the model signals end-of-sequence (or degrades to padding).
                 if (maxIdx === vocab["</s>"] || maxIdx === vocab["<pad>"]) break;
-                
-                let decodedChar = reverseVocab[maxIdx];
+
+                const decodedChar = reverseVocab[maxIdx];
                 if (decodedChar) generatedJson += decodedChar;
+
+                inputIds[cursor] = BigInt(maxIdx);
+                cursor++;
             }
 
-            // Step 5: Intercept and validate JSON string formatting
+            // Step 5: Intercept and validate JSON string formatting. The model occasionally
+            // emits a little leading noise before the actual JSON object, so extract the
+            // outermost {...} span rather than requiring the whole string to parse cleanly.
             let command;
             try {
-                const cleanJsonStr = generatedJson.trim();
-                modelDiv.innerText = cleanJsonStr;
-                
-                command = JSON.parse(cleanJsonStr);
+                const rawStr = generatedJson.trim();
+                modelDiv.innerText = rawStr;
+
+                // These route objects are always flat (no nested braces), so the last '{'
+                // through the last '}' reliably isolates the real object even if the model
+                // prepends stray leading characters before it.
+                const start = rawStr.lastIndexOf('{');
+                const end = rawStr.lastIndexOf('}');
+                if (start === -1 || end === -1 || end < start) {
+                    throw new Error("No JSON object boundaries found");
+                }
+                command = JSON.parse(rawStr.slice(start, end + 1));
             } catch (jsonErr) {
                 console.error("Malformed JSON payload string:", generatedJson);
                 modelDiv.innerText = `Raw Stream Output:\n-----------------------\n${generatedJson}\n-----------------------\n\n[Status: Truncated/Malformed JSON String]`;
