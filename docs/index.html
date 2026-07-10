@@ -108,7 +108,7 @@
     let vocab = {};
     let reverseVocab = {};
     const MAX_SEQ_LEN = 256;   // Must match cfg.max_seq_len / the fixed ONNX input shape
-    const MAX_NEW_TOKENS = 128; // Generation budget per request
+    const MAX_NEW_TOKENS = 100; // Generation budget per request (longest observed valid completion is ~80 chars)
     let VOCAB_SIZE = 0;        // Derived from tokenizer_vocab.json after load (actual trained size, e.g. 86 - NOT the 1024 ceiling in config.py)
 
     // Hardcoded relational lookup dictionary serving as our browser-side Ground Truth graph
@@ -191,13 +191,20 @@
         const inputPrompt = document.getElementById('userInput').value.trim();
         const modelDiv = document.getElementById('modelOutput');
         const graphDiv = document.getElementById('graphOutput');
+        const submitBtn = document.getElementById('submitBtn');
         
         if (!inputPrompt) {
             alert("Please input an assembly engineering inquiry first.");
             return;
         }
-        
-        modelDiv.innerText = "Running autoregressive token translation passes...";
+
+        // Guard against overlapping runs and make it obvious the page is working, not frozen -
+        // generation takes ~75-80 forward passes through the network (roughly 15-30s in WASM,
+        // since GitHub Pages doesn't send the cross-origin-isolation headers WASM threading
+        // needs, so it runs single-threaded).
+        submitBtn.disabled = true;
+        const genStart = Date.now();
+        modelDiv.innerText = "Running autoregressive token translation passes... (token 0, 0.0s)";
         graphDiv.innerText = "Awaiting interceptor routing token verification...";
 
         let generatedJson = "";
@@ -261,6 +268,11 @@
 
                 inputIds[cursor] = BigInt(maxIdx);
                 cursor++;
+
+                // Live progress so the page never looks frozen mid-generation.
+                const elapsedSec = ((Date.now() - genStart) / 1000).toFixed(1);
+                const tokenCount = cursor - promptLength;
+                modelDiv.innerText = `Running autoregressive token translation passes... (token ${tokenCount}, ${elapsedSec}s)\n\n${generatedJson}`;
             }
 
             // Step 5: Intercept and validate JSON string formatting. The model occasionally
@@ -313,6 +325,8 @@
             console.error(err);
             modelDiv.innerText = `Raw Stream Output:\n-----------------------\n"${generatedJson}"\n-----------------------\n\n[Status: Execution Exception Caught]`;
             graphDiv.innerText = `[PARSING FAILURE DETECTED]\nAn unexpected error halted text token compilation. Check your console log inputs.`;
+        } finally {
+            submitBtn.disabled = false;
         }
     }
 

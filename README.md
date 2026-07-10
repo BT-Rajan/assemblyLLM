@@ -40,7 +40,13 @@ client-side in the browser via `onnxruntime-web` — no server, no API calls.
    - `What is the thread_specification profile assigned to component P008?`
    - `If part P001 breaks down, what downstream units lose operational integrity?`
    - `Check the codified design matrix connection mapping from P005 to P006.`
-4. Click **Analyze Assembly State**. You'll see two panels:
+4. Click **Analyze Assembly State**. Generation is genuinely slow — the
+   model runs one full forward pass per output character (~75-80 passes for
+   a typical answer), and GitHub Pages doesn't send the headers WASM
+   threading needs, so it runs single-threaded. Expect **~15-30 seconds**
+   per query. The button disables and the output panel streams live
+   token/elapsed-time progress while it's working, so it won't look frozen
+   — just give it a bit. You'll see two panels once it finishes:
    - **Neural Network Output Token** — the raw JSON the model generated
      (e.g. `{"action": "lookup", "target": "P008", "property": "thread_specification"}`)
    - **Interceptor Graph Registry Ground Truth** — the deterministic answer
