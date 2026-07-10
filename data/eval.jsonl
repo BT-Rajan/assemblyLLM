@@ -1,0 +1,25 @@
+{"prompt": "Identify the operational joint boundary interface code between P008 and P009.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P008\", \"destination\": \"P009\"}"}
+{"prompt": "Show the physical ergonomic_sleeve configuration metric for P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"ergonomic_sleeve\"}"}
+{"prompt": "Show the physical material configuration metric for P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"material\"}"}
+{"prompt": "Show the physical free_length configuration metric for P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"free_length\"}"}
+{"prompt": "What is the free_length profile assigned to component P004?", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"free_length\"}"}
+{"prompt": "System diagnostics inquiry: check tooth_count on item P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"tooth_count\"}"}
+{"prompt": "Extract telemetry values for property color belonging to item P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"color\"}"}
+{"prompt": "System diagnostics inquiry: check color on item P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"color\"}"}
+{"prompt": "System diagnostics inquiry: check tip_size on item P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"tip_size\"}"}
+{"prompt": "Get me the exact structural ergonomic_sleeve specs for part P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"ergonomic_sleeve\"}"}
+{"prompt": "Extract telemetry values for property tooth_count belonging to item P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"tooth_count\"}"}
+{"prompt": "Show the physical grip_zone_profile configuration metric for P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"grip_zone_profile\"}"}
+{"prompt": "What mechanical or structural constraint links part P004 directly to P009?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P004\", \"destination\": \"P009\"}"}
+{"prompt": "How does component P008 transfer or pass loads down to P009?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P008\", \"destination\": \"P009\"}"}
+{"prompt": "What happens across the assembly loop if P003 experiences physical deformation?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P003\"}"}
+{"prompt": "Get me the exact structural ramp_angle specs for part P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"ramp_angle\"}"}
+{"prompt": "What happens across the assembly loop if P006 experiences physical deformation?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P006\"}"}
+{"prompt": "What is the tracks profile assigned to component P003?", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"tracks\"}"}
+{"prompt": "Extract telemetry values for property free_length belonging to item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"free_length\"}"}
+{"prompt": "Extract telemetry values for property wire_diameter belonging to item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"wire_diameter\"}"}
+{"prompt": "What is the material profile assigned to component P005?", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"material\"}"}
+{"prompt": "Analyze downstream faults triggered by an isolated collapse of component P006.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P006\"}"}
+{"prompt": "Get me the exact structural color specs for part P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"color\"}"}
+{"prompt": "System diagnostics inquiry: check ramp_angle on item P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"ramp_angle\"}"}
+{"prompt": "What happens across the assembly loop if P001 experiences physical deformation?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P001\"}"}

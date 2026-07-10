@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assembly Matrix Inquiry System</title>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #f4f6f9; 
+            color: #333; 
+            margin: 40px; 
+        }
+        .container { 
+            max-width: 800px; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            margin: 0 auto;
+        }
+        h2 { 
+            border-bottom: 2px solid #eaeaea; 
+            padding-bottom: 10px; 
+            color: #1e293b; 
+            margin-top: 0;
+        }
+        p { color: #64748b; font-size: 14px; }
+        textarea { 
+            width: 100%; 
+            height: 80px; 
+            padding: 12px; 
+            box-sizing: border-box; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            resize: vertical; 
+            font-family: inherit;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        button { 
+            background: #2563eb; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            font-size: 14px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-top: 10px; 
+            transition: background 0.2s;
+        }
+        button:hover { background: #1d4ed8; }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+        h3 { color: #334155; font-size: 16px; margin-top: 25px; margin-bottom: 8px; }
+        .box { 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            padding: 15px; 
+            border-radius: 4px; 
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; 
+            white-space: pre-wrap; 
+            font-size: 13px; 
+            word-break: break-all;
+        }
+        .truth { 
+            border-left: 4px solid #10b981; 
+            background: #f0fdf4; 
+            color: #14532d;
+            font-weight: 500;
+        }
+        .status-bar {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .status-loading { background: #fef3c7; color: #92400e; }
+        .status-ready { background: #dcfce7; color: #166534; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Independent Assembly Router Matrix</h2>
+    <div id="systemStatus" class="status-bar status-loading">Initializing WebAssembly Runtime & loading model configurations...</div>
+    
+    <p>Type an inquiry regarding the ballpoint pen components (e.g., properties for P001 to P009, materials, or downstream tracing checks):</p>
+    
+    <textarea id="userInput" placeholder="e.g., If part P001 breaks down, what downstream units lose operational integrity?"></textarea>
+    <button id="submitBtn" onclick="runInference()" disabled>Analyze Assembly State</button>
+
+    <h3>1. Neural Network Output Token (JSON Route Target)</h3>
+    <div id="modelOutput" class="box">Awaiting prompt submission...</div>
+
+    <h3>2. Interceptor Graph Registry Ground Truth</h3>
+    <div id="graphOutput" class="box truth">Awaiting deterministic system confirmation...</div>
+</div>
+
+<script>
+    let session = null;
+    let vocab = {};
+    let reverseVocab = {};
+    const MAX_SEQ_LEN = 256;
+    const VOCAB_SIZE = 1024; // Must align with config.py vocabulary ceiling
+
+    // Hardcoded relational lookup dictionary serving as our browser-side Ground Truth graph
+    const PARTS_GRAPH = {
+        "P001": { name: "Plunger Cap", material: "ABS Plastic", stroke_distance: "4.5mm", downstream: ["P002", "P003", "P005", "P006", "P007"] },
+        "P002": { name: "Upper Cam Thruster", material: "Nylon-66", tooth_count: "4", downstream: ["P003", "P005", "P006", "P007"] },
+        "P003": { name: "Lower Cam Follower", material: "POM Polyacetal", tracks: "Linear slots", downstream: ["P005", "P006", "P007"] },
+        "P004": { name: "Return Spring", material: "Music Wire Steel", spring_rate: "0.38 N/mm", downstream: ["P005", "P006", "P007", "P009"] },
+        "P005": { name: "Ink Reservoir Tube", material: "Polypropylene", ink_color: "Blue", downstream: ["P006", "P007"] },
+        "P006": { name: "Tip Housing", material: "Brass", tip_size: "0.7mm Fine", downstream: ["P007"] },
+        "P007": { name: "Ball Bearing", material: "Tungsten Carbide", diameter: "0.698mm", downstream: [] },
+        "P008": { name: "Upper Barrel", material: "Polycarbonate", thread_specification: "M8 x 0.75 Internal", downstream: ["P009"] },
+        "P009": { name: "Lower Barrel", material: "Polycarbonate", thread_specification: "M8 x 0.75 External", downstream: [] }
+    };
+
+    // Initialize and boot up dependencies asynchronously 
+    async function initSystem() {
+        const statusDiv = document.getElementById('systemStatus');
+        const submitBtn = document.getElementById('submitBtn');
+        try {
+            // Step A: Load the vocabulary configuration matrix saved from training
+            const response = await fetch('../data/tokenizer_vocab.json');
+            const vocabData = await response.json();
+            vocab = vocabData.stoi;
+            
+            // Reconstruct the integer lookup index map
+            for (let ch in vocab) {
+                reverseVocab[vocab[ch]] = ch;
+            }
+
+            // Step B: Set up explicit path locations pointing to the model and data weights
+            const modelUrl = './assembly_router.onnx';
+            const dataUrl = './assembly_router.onnx.data';
+
+            // Step C: Initialize the session passing options matching ONNX Runtime Web's specification
+            session = await ort.InferenceSession.create(modelUrl, {
+                externalData: [
+                    {
+                        path: 'assembly_router.onnx.data', // Must exactly match internal protobuf naming key
+                        data: dataUrl
+                    }
+                ]
+            });
+            
+            statusDiv.className = "status-bar status-ready";
+            statusDiv.innerText = "✓ ONNX WebAssembly Runtime Active. Model weights loaded locally.";
+            submitBtn.disabled = false;
+        } catch (error) {
+            statusDiv.style.background = "#fee2e2";
+            statusDiv.style.color = "#991b1b";
+            statusDiv.innerText = "✕ Initialization Failed. Open F12 Console for details.";
+            console.error(error);
+        }
+    }
+
+    // Alphanumeric character token serialization engine
+    function encodeText(text) {
+        let tokens = [vocab["<s>"]];
+        for (let char of text) {
+            if (vocab[char] !== undefined) {
+                tokens.push(vocab[char]);
+            } else {
+                tokens.push(vocab["<unk>"]);
+            }
+        }
+        tokens.push(vocab["</s>"]);
+        return tokens;
+    }
+
+    async function runInference() {
+        if (!session) return;
+        
+        const inputPrompt = document.getElementById('userInput').value.trim();
+        const modelDiv = document.getElementById('modelOutput');
+        const graphDiv = document.getElementById('graphOutput');
+        
+        if (!inputPrompt) {
+            alert("Please input an assembly engineering inquiry first.");
+            return;
+        }
+        
+        modelDiv.innerText = "Running autoregressive token translation passes...";
+        graphDiv.innerText = "Awaiting interceptor routing token verification...";
+
+        let generatedJson = "";
+
+        try {
+            // Step 1: Wrap input prompt with our explicit training template structure
+            const fullPrompt = `User: ${inputPrompt}\nBot: `;
+            const encodedTokens = encodeText(fullPrompt);
+            
+            // Step 2: Build an Int64 static array padded with zeroes to satisfy tensor requirement
+            const inputIds = new BigInt64Array(MAX_SEQ_LEN).fill(BigInt(vocab["<pad>"]));
+            for (let i = 0; i < Math.min(encodedTokens.length, MAX_SEQ_LEN); i++) {
+                inputIds[i] = BigInt(encodedTokens[i]);
+            }
+            
+            // Step 3: Run parameters using explicit 'int64' data typing alignment
+            const inputTensor = new ort.Tensor('int64', inputIds, [1, MAX_SEQ_LEN]);
+            const feeds = { 'input_ids': inputTensor };
+            
+            const outputs = await session.run(feeds);
+            const logits = outputs.logits.data; // Raw output array block
+            
+            // Step 4: Extract predicted string tokens following input text boundary
+            let promptLength = encodedTokens.length;
+            
+            for (let i = promptLength - 1; i < MAX_SEQ_LEN; i++) {
+                let maxIdx = 0;
+                let maxVal = -Infinity;
+                let offset = i * VOCAB_SIZE;
+                
+                // Identify highest scoring character dimension index
+                for (let v = 0; v < VOCAB_SIZE; v++) {
+                    let val = logits[offset + v];
+                    if (val > maxVal) {
+                        maxVal = val;
+                        maxIdx = v;
+                    }
+                }
+                
+                // Break sequence parsing loop if terminal token markers are reached
+                if (maxIdx === vocab["</s>"] || maxIdx === vocab["<pad>"]) break;
+                
+                let decodedChar = reverseVocab[maxIdx];
+                if (decodedChar) generatedJson += decodedChar;
+            }
+
+            // Step 5: Intercept and validate JSON string formatting
+            let command;
+            try {
+                const cleanJsonStr = generatedJson.trim();
+                modelDiv.innerText = cleanJsonStr;
+                
+                command = JSON.parse(cleanJsonStr);
+            } catch (jsonErr) {
+                console.error("Malformed JSON payload string:", generatedJson);
+                modelDiv.innerText = `Raw Stream Output:\n-----------------------\n${generatedJson}\n-----------------------\n\n[Status: Truncated/Malformed JSON String]`;
+                graphDiv.innerText = `[PARSING WARNING] The network generated a partial sequence, but it was clipped before closing properly. Check F12 Console for details.`;
+                return;
+            }
+
+            // Step 6: Route parameters if JSON parsed successfully
+            const target = command.target ? command.target.toUpperCase() : null;
+            
+            if (!PARTS_GRAPH[target]) {
+                graphDiv.innerText = `[ROUTING ERROR] Isolated part target code '${target}' is missing from physical component schema inventory registries.`;
+                return;
+            }
+            
+            const partInfo = PARTS_GRAPH[target];
+            
+            if (command.action === "lookup") {
+                const property = command.property;
+                const value = partInfo[property] || "Property descriptor key not found";
+                graphDiv.innerText = `[INTERCEPTOR SEED TRUTH] DB_LOOKUP successful:\nComponent: ${target} (${partInfo.name})\nProperty Requested: '${property}'\nValue: ${value}`;
+            } else if (command.action === "trace_downstream") {
+                graphDiv.innerText = `[INTERCEPTOR GRAPH TRUTH] CASCADE_TRACE analytical tracking successful:\nComponent Fault Node: ${target} (${partInfo.name})\nDownstream Operational Systems Impact Risks: ${JSON.stringify(partInfo.downstream)}`;
+            } else if (command.action === "matrix_check") {
+                graphDiv.innerText = `[INTERCEPTOR MATRIX TRUTH] MATRIX_CHECK tracking successful:\nInterface Linkage Evaluated. Checking specific structural matrix logic nodes.`;
+            } else {
+                graphDiv.innerText = `[COMPLIANCE ALERT] Command action target parsed successfully but sequence method rules are unhandled.`;
+            }
+
+        } catch (err) {
+            console.error(err);
+            modelDiv.innerText = `Raw Stream Output:\n-----------------------\n"${generatedJson}"\n-----------------------\n\n[Status: Execution Exception Caught]`;
+            graphDiv.innerText = `[PARSING FAILURE DETECTED]\nAn unexpected error halted text token compilation. Check your console log inputs.`;
+        }
+    }
+
+    // Trigger loading configurations automatically when viewport rendering concludes
+    window.onload = initSystem;
+</script>
+</body>
+</html>

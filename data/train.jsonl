@@ -1,0 +1,216 @@
+{"prompt": "What is the material profile assigned to component P004?", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"material\"}"}
+{"prompt": "System diagnostics inquiry: check material on item P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"material\"}"}
+{"prompt": "Show the physical color configuration metric for P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"color\"}"}
+{"prompt": "What is the ink_type profile assigned to component P005?", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_type\"}"}
+{"prompt": "What is the tip_size profile assigned to component P006?", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"tip_size\"}"}
+{"prompt": "Run a downstream dependency sweep starting from component P008.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P008\"}"}
+{"prompt": "How does component P001 transfer or pass loads down to P008?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P001\", \"destination\": \"P008\"}"}
+{"prompt": "Extract telemetry values for property thread_specification belonging to item P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"thread_specification\"}"}
+{"prompt": "What mechanical or structural constraint links part P005 directly to P006?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P005\", \"destination\": \"P006\"}"}
+{"prompt": "Show the physical radial_step_depth configuration metric for P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"radial_step_depth\"}"}
+{"prompt": "Get me the exact structural material specs for part P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"material\"}"}
+{"prompt": "What happens across the assembly loop if P007 experiences physical deformation?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P007\"}"}
+{"prompt": "Show the physical ramp_angle configuration metric for P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"ramp_angle\"}"}
+{"prompt": "System diagnostics inquiry: check outer_diameter on item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"outer_diameter\"}"}
+{"prompt": "What is the diameter profile assigned to component P007?", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"diameter\"}"}
+{"prompt": "What is the material profile assigned to component P009?", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"material\"}"}
+{"prompt": "Get me the exact structural tooth_count specs for part P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"tooth_count\"}"}
+{"prompt": "System diagnostics inquiry: check sphericity_tolerance on item P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"sphericity_tolerance\"}"}
+{"prompt": "If part P007 fails or breaks down, what downstream units lose operational integrity?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P007\"}"}
+{"prompt": "Identify the operational joint boundary interface code between P001 and P002.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P001\", \"destination\": \"P002\"}"}
+{"prompt": "What is the tip_opening_clearance profile assigned to component P009?", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"tip_opening_clearance\"}"}
+{"prompt": "Trace the cascading structural system impact if component P004 is compromised.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P004\"}"}
+{"prompt": "Get me the exact structural active_coils specs for part P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"active_coils\"}"}
+{"prompt": "Extract telemetry values for property sphericity_tolerance belonging to item P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"sphericity_tolerance\"}"}
+{"prompt": "Show the physical thread_specification configuration metric for P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"thread_specification\"}"}
+{"prompt": "Identify the operational joint boundary interface code between P004 and P005.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P004\", \"destination\": \"P005\"}"}
+{"prompt": "Show the physical inner_volume configuration metric for P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"inner_volume\"}"}
+{"prompt": "How does component P005 transfer or pass loads down to P006?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P005\", \"destination\": \"P006\"}"}
+{"prompt": "Run a downstream dependency sweep starting from component P009.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P009\"}"}
+{"prompt": "Show the physical diameter configuration metric for P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"diameter\"}"}
+{"prompt": "Run a downstream dependency sweep starting from component P001.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P001\"}"}
+{"prompt": "Get me the exact structural wire_diameter specs for part P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"wire_diameter\"}"}
+{"prompt": "System diagnostics inquiry: check material on item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"material\"}"}
+{"prompt": "Identify the operational joint boundary interface code between P006 and P007.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P006\", \"destination\": \"P007\"}"}
+{"prompt": "Extract telemetry values for property stroke_distance belonging to item P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"stroke_distance\"}"}
+{"prompt": "What mechanical or structural constraint links part P008 directly to P009?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P008\", \"destination\": \"P009\"}"}
+{"prompt": "What is the target_fit profile assigned to component P006?", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"target_fit\"}"}
+{"prompt": "Extract telemetry values for property ramp_angle belonging to item P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"ramp_angle\"}"}
+{"prompt": "Trace the cascading structural system impact if component P009 is compromised.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P009\"}"}
+{"prompt": "Show the physical tip_size configuration metric for P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"tip_size\"}"}
+{"prompt": "System diagnostics inquiry: check grip_zone_profile on item P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"grip_zone_profile\"}"}
+{"prompt": "What is the stroke_distance profile assigned to component P001?", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"stroke_distance\"}"}
+{"prompt": "Identify the operational joint boundary interface code between P003 and P005.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P003\", \"destination\": \"P005\"}"}
+{"prompt": "What is the material profile assigned to component P003?", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"material\"}"}
+{"prompt": "Extract telemetry values for property radial_step_depth belonging to item P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"radial_step_depth\"}"}
+{"prompt": "Identify the operational joint boundary interface code between P002 and P003.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P002\", \"destination\": \"P003\"}"}
+{"prompt": "System diagnostics inquiry: check target_fit on item P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"target_fit\"}"}
+{"prompt": "Show the physical ink_type configuration metric for P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_type\"}"}
+{"prompt": "Show the physical material configuration metric for P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"material\"}"}
+{"prompt": "Run a downstream dependency sweep starting from component P005.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P005\"}"}
+{"prompt": "What is the sphericity_tolerance profile assigned to component P007?", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"sphericity_tolerance\"}"}
+{"prompt": "Extract telemetry values for property spring_rate belonging to item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"spring_rate\"}"}
+{"prompt": "What is the color profile assigned to component P001?", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"color\"}"}
+{"prompt": "Get me the exact structural thread_specification specs for part P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"thread_specification\"}"}
+{"prompt": "What is the wire_diameter profile assigned to component P004?", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"wire_diameter\"}"}
+{"prompt": "System diagnostics inquiry: check material on item P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"material\"}"}
+{"prompt": "What is the material profile assigned to component P002?", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"material\"}"}
+{"prompt": "Extract telemetry values for property material belonging to item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"material\"}"}
+{"prompt": "Get me the exact structural sphericity_tolerance specs for part P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"sphericity_tolerance\"}"}
+{"prompt": "Extract telemetry values for property tip_opening_clearance belonging to item P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"tip_opening_clearance\"}"}
+{"prompt": "Get me the exact structural thread_specification specs for part P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"thread_specification\"}"}
+{"prompt": "Run a downstream dependency sweep starting from component P007.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P007\"}"}
+{"prompt": "Show the physical material configuration metric for P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"material\"}"}
+{"prompt": "What happens across the assembly loop if P009 experiences physical deformation?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P009\"}"}
+{"prompt": "Extract telemetry values for property material belonging to item P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"material\"}"}
+{"prompt": "Extract telemetry values for property ergonomic_sleeve belonging to item P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"ergonomic_sleeve\"}"}
+{"prompt": "How does component P004 transfer or pass loads down to P009?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P004\", \"destination\": \"P009\"}"}
+{"prompt": "Get me the exact structural inner_volume specs for part P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"inner_volume\"}"}
+{"prompt": "System diagnostics inquiry: check material on item P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"material\"}"}
+{"prompt": "System diagnostics inquiry: check thread_specification on item P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"thread_specification\"}"}
+{"prompt": "What is the thread_specification profile assigned to component P009?", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"thread_specification\"}"}
+{"prompt": "Extract telemetry values for property material belonging to item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"material\"}"}
+{"prompt": "Extract telemetry values for property material belonging to item P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"material\"}"}
+{"prompt": "If part P002 fails or breaks down, what downstream units lose operational integrity?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P002\"}"}
+{"prompt": "Extract telemetry values for property outer_diameter belonging to item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"outer_diameter\"}"}
+{"prompt": "System diagnostics inquiry: check tracks on item P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"tracks\"}"}
+{"prompt": "System diagnostics inquiry: check stroke_distance on item P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"stroke_distance\"}"}
+{"prompt": "Show the physical outer_diameter configuration metric for P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"outer_diameter\"}"}
+{"prompt": "Identify the operational joint boundary interface code between P004 and P009.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P004\", \"destination\": \"P009\"}"}
+{"prompt": "Show the physical wire_diameter configuration metric for P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"wire_diameter\"}"}
+{"prompt": "System diagnostics inquiry: check material on item P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"material\"}"}
+{"prompt": "What is the material profile assigned to component P001?", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"material\"}"}
+{"prompt": "Check the codified design matrix connection mapping from P002 to P003.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P002\", \"destination\": \"P003\"}"}
+{"prompt": "If part P009 fails or breaks down, what downstream units lose operational integrity?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P009\"}"}
+{"prompt": "Trace the cascading structural system impact if component P008 is compromised.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P008\"}"}
+{"prompt": "Extract telemetry values for property tracks belonging to item P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"tracks\"}"}
+{"prompt": "Trace the cascading structural system impact if component P001 is compromised.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P001\"}"}
+{"prompt": "Run a downstream dependency sweep starting from component P006.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P006\"}"}
+{"prompt": "Extract telemetry values for property inner_volume belonging to item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"inner_volume\"}"}
+{"prompt": "Show the physical material configuration metric for P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"material\"}"}
+{"prompt": "Identify the operational joint boundary interface code between P001 and P008.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P001\", \"destination\": \"P008\"}"}
+{"prompt": "Show the physical tip_opening_clearance configuration metric for P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"tip_opening_clearance\"}"}
+{"prompt": "Get me the exact structural material specs for part P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"material\"}"}
+{"prompt": "If part P004 fails or breaks down, what downstream units lose operational integrity?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P004\"}"}
+{"prompt": "Get me the exact structural tip_size specs for part P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"tip_size\"}"}
+{"prompt": "Analyze downstream faults triggered by an isolated collapse of component P009.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P009\"}"}
+{"prompt": "What mechanical or structural constraint links part P006 directly to P007?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P006\", \"destination\": \"P007\"}"}
+{"prompt": "Extract telemetry values for property material belonging to item P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"material\"}"}
+{"prompt": "Show the physical thread_specification configuration metric for P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"thread_specification\"}"}
+{"prompt": "What mechanical or structural constraint links part P001 directly to P008?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P001\", \"destination\": \"P008\"}"}
+{"prompt": "Show the physical target_fit configuration metric for P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"target_fit\"}"}
+{"prompt": "System diagnostics inquiry: check material on item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"material\"}"}
+{"prompt": "Identify the operational joint boundary interface code between P005 and P006.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P005\", \"destination\": \"P006\"}"}
+{"prompt": "Analyze downstream faults triggered by an isolated collapse of component P003.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P003\"}"}
+{"prompt": "Get me the exact structural outer_diameter specs for part P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"outer_diameter\"}"}
+{"prompt": "Show the physical sphericity_tolerance configuration metric for P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"sphericity_tolerance\"}"}
+{"prompt": "Analyze downstream faults triggered by an isolated collapse of component P008.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P008\"}"}
+{"prompt": "System diagnostics inquiry: check thread_specification on item P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"thread_specification\"}"}
+{"prompt": "Run a downstream dependency sweep starting from component P002.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P002\"}"}
+{"prompt": "System diagnostics inquiry: check ergonomic_sleeve on item P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"ergonomic_sleeve\"}"}
+{"prompt": "Show the physical material configuration metric for P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"material\"}"}
+{"prompt": "Show the physical material configuration metric for P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"material\"}"}
+{"prompt": "What is the material profile assigned to component P007?", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"material\"}"}
+{"prompt": "What mechanical or structural constraint links part P002 directly to P003?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P002\", \"destination\": \"P003\"}"}
+{"prompt": "Trace the cascading structural system impact if component P005 is compromised.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P005\"}"}
+{"prompt": "Trace the cascading structural system impact if component P003 is compromised.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P003\"}"}
+{"prompt": "System diagnostics inquiry: check material on item P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"material\"}"}
+{"prompt": "What is the active_coils profile assigned to component P004?", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"active_coils\"}"}
+{"prompt": "Run a downstream dependency sweep starting from component P003.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P003\"}"}
+{"prompt": "Check the codified design matrix connection mapping from P008 to P009.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P008\", \"destination\": \"P009\"}"}
+{"prompt": "Get me the exact structural material specs for part P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"material\"}"}
+{"prompt": "Get me the exact structural spring_rate specs for part P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"spring_rate\"}"}
+{"prompt": "What is the material profile assigned to component P008?", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"material\"}"}
+{"prompt": "Check the codified design matrix connection mapping from P001 to P002.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P001\", \"destination\": \"P002\"}"}
+{"prompt": "What is the grip_zone_profile profile assigned to component P008?", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"grip_zone_profile\"}"}
+{"prompt": "What happens across the assembly loop if P002 experiences physical deformation?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P002\"}"}
+{"prompt": "What is the material profile assigned to component P006?", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"material\"}"}
+{"prompt": "What is the thread_specification profile assigned to component P008?", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"thread_specification\"}"}
+{"prompt": "System diagnostics inquiry: check wire_diameter on item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"wire_diameter\"}"}
+{"prompt": "How does component P006 transfer or pass loads down to P007?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P006\", \"destination\": \"P007\"}"}
+{"prompt": "Trace the cascading structural system impact if component P006 is compromised.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P006\"}"}
+{"prompt": "Get me the exact structural tracks specs for part P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"tracks\"}"}
+{"prompt": "Analyze downstream faults triggered by an isolated collapse of component P005.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P005\"}"}
+{"prompt": "Get me the exact structural target_fit specs for part P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"target_fit\"}"}
+{"prompt": "Extract telemetry values for property material belonging to item P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"material\"}"}
+{"prompt": "How does component P002 transfer or pass loads down to P003?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P002\", \"destination\": \"P003\"}"}
+{"prompt": "Check the codified design matrix connection mapping from P001 to P008.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P001\", \"destination\": \"P008\"}"}
+{"prompt": "Show the physical spring_rate configuration metric for P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"spring_rate\"}"}
+{"prompt": "Get me the exact structural material specs for part P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"material\"}"}
+{"prompt": "Get me the exact structural tip_opening_clearance specs for part P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"tip_opening_clearance\"}"}
+{"prompt": "Extract telemetry values for property target_fit belonging to item P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"target_fit\"}"}
+{"prompt": "What is the inner_volume profile assigned to component P005?", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"inner_volume\"}"}
+{"prompt": "Check the codified design matrix connection mapping from P004 to P005.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P004\", \"destination\": \"P005\"}"}
+{"prompt": "If part P003 fails or breaks down, what downstream units lose operational integrity?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P003\"}"}
+{"prompt": "Show the physical stroke_distance configuration metric for P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"stroke_distance\"}"}
+{"prompt": "System diagnostics inquiry: check inner_volume on item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"inner_volume\"}"}
+{"prompt": "What mechanical or structural constraint links part P001 directly to P002?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P001\", \"destination\": \"P002\"}"}
+{"prompt": "Extract telemetry values for property material belonging to item P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"material\"}"}
+{"prompt": "Show the physical active_coils configuration metric for P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"active_coils\"}"}
+{"prompt": "Analyze downstream faults triggered by an isolated collapse of component P001.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P001\"}"}
+{"prompt": "System diagnostics inquiry: check diameter on item P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"diameter\"}"}
+{"prompt": "Run a downstream dependency sweep starting from component P004.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P004\"}"}
+{"prompt": "Check the codified design matrix connection mapping from P006 to P007.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P006\", \"destination\": \"P007\"}"}
+{"prompt": "Get me the exact structural grip_zone_profile specs for part P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"grip_zone_profile\"}"}
+{"prompt": "System diagnostics inquiry: check radial_step_depth on item P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"radial_step_depth\"}"}
+{"prompt": "System diagnostics inquiry: check material on item P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"material\"}"}
+{"prompt": "System diagnostics inquiry: check active_coils on item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"active_coils\"}"}
+{"prompt": "System diagnostics inquiry: check spring_rate on item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"spring_rate\"}"}
+{"prompt": "What is the ink_color profile assigned to component P005?", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_color\"}"}
+{"prompt": "Show the physical ink_color configuration metric for P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_color\"}"}
+{"prompt": "Get me the exact structural radial_step_depth specs for part P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"radial_step_depth\"}"}
+{"prompt": "System diagnostics inquiry: check ink_color on item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_color\"}"}
+{"prompt": "Get me the exact structural diameter specs for part P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"diameter\"}"}
+{"prompt": "What happens across the assembly loop if P008 experiences physical deformation?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P008\"}"}
+{"prompt": "Trace the cascading structural system impact if component P007 is compromised.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P007\"}"}
+{"prompt": "What is the ramp_angle profile assigned to component P002?", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"ramp_angle\"}"}
+{"prompt": "Check the codified design matrix connection mapping from P003 to P005.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P003\", \"destination\": \"P005\"}"}
+{"prompt": "If part P005 fails or breaks down, what downstream units lose operational integrity?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P005\"}"}
+{"prompt": "Show the physical material configuration metric for P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"material\"}"}
+{"prompt": "System diagnostics inquiry: check free_length on item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"free_length\"}"}
+{"prompt": "Analyze downstream faults triggered by an isolated collapse of component P002.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P002\"}"}
+{"prompt": "If part P006 fails or breaks down, what downstream units lose operational integrity?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P006\"}"}
+{"prompt": "Extract telemetry values for property material belonging to item P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"material\"}"}
+{"prompt": "Show the physical material configuration metric for P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"material\"}"}
+{"prompt": "Extract telemetry values for property thread_specification belonging to item P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"thread_specification\"}"}
+{"prompt": "Extract telemetry values for property ink_color belonging to item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_color\"}"}
+{"prompt": "System diagnostics inquiry: check tip_opening_clearance on item P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"tip_opening_clearance\"}"}
+{"prompt": "If part P001 fails or breaks down, what downstream units lose operational integrity?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P001\"}"}
+{"prompt": "What is the outer_diameter profile assigned to component P005?", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"outer_diameter\"}"}
+{"prompt": "Get me the exact structural material specs for part P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"material\"}"}
+{"prompt": "What is the tooth_count profile assigned to component P002?", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"tooth_count\"}"}
+{"prompt": "Get me the exact structural material specs for part P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"material\"}"}
+{"prompt": "Get me the exact structural material specs for part P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"material\"}"}
+{"prompt": "Extract telemetry values for property grip_zone_profile belonging to item P008.", "completion": "{\"action\": \"lookup\", \"target\": \"P008\", \"property\": \"grip_zone_profile\"}"}
+{"prompt": "Extract telemetry values for property diameter belonging to item P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"diameter\"}"}
+{"prompt": "Get me the exact structural stroke_distance specs for part P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"stroke_distance\"}"}
+{"prompt": "Extract telemetry values for property active_coils belonging to item P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"active_coils\"}"}
+{"prompt": "How does component P003 transfer or pass loads down to P005?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P003\", \"destination\": \"P005\"}"}
+{"prompt": "System diagnostics inquiry: check ink_type on item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_type\"}"}
+{"prompt": "Get me the exact structural ink_color specs for part P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_color\"}"}
+{"prompt": "Show the physical tooth_count configuration metric for P002.", "completion": "{\"action\": \"lookup\", \"target\": \"P002\", \"property\": \"tooth_count\"}"}
+{"prompt": "Extract telemetry values for property material belonging to item P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"material\"}"}
+{"prompt": "How does component P004 transfer or pass loads down to P005?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P004\", \"destination\": \"P005\"}"}
+{"prompt": "Check the codified design matrix connection mapping from P005 to P006.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P005\", \"destination\": \"P006\"}"}
+{"prompt": "Get me the exact structural ink_type specs for part P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_type\"}"}
+{"prompt": "If part P008 fails or breaks down, what downstream units lose operational integrity?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P008\"}"}
+{"prompt": "What mechanical or structural constraint links part P003 directly to P005?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P003\", \"destination\": \"P005\"}"}
+{"prompt": "Show the physical tracks configuration metric for P003.", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"tracks\"}"}
+{"prompt": "How does component P001 transfer or pass loads down to P002?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P001\", \"destination\": \"P002\"}"}
+{"prompt": "Extract telemetry values for property ink_type belonging to item P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"ink_type\"}"}
+{"prompt": "What mechanical or structural constraint links part P004 directly to P005?", "completion": "{\"action\": \"matrix_check\", \"source\": \"P004\", \"destination\": \"P005\"}"}
+{"prompt": "What happens across the assembly loop if P004 experiences physical deformation?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P004\"}"}
+{"prompt": "What is the radial_step_depth profile assigned to component P003?", "completion": "{\"action\": \"lookup\", \"target\": \"P003\", \"property\": \"radial_step_depth\"}"}
+{"prompt": "Analyze downstream faults triggered by an isolated collapse of component P007.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P007\"}"}
+{"prompt": "Get me the exact structural material specs for part P001.", "completion": "{\"action\": \"lookup\", \"target\": \"P001\", \"property\": \"material\"}"}
+{"prompt": "Get me the exact structural material specs for part P005.", "completion": "{\"action\": \"lookup\", \"target\": \"P005\", \"property\": \"material\"}"}
+{"prompt": "What is the ergonomic_sleeve profile assigned to component P009?", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"ergonomic_sleeve\"}"}
+{"prompt": "Show the physical material configuration metric for P007.", "completion": "{\"action\": \"lookup\", \"target\": \"P007\", \"property\": \"material\"}"}
+{"prompt": "Get me the exact structural free_length specs for part P004.", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"free_length\"}"}
+{"prompt": "Extract telemetry values for property tip_size belonging to item P006.", "completion": "{\"action\": \"lookup\", \"target\": \"P006\", \"property\": \"tip_size\"}"}
+{"prompt": "Check the codified design matrix connection mapping from P004 to P009.", "completion": "{\"action\": \"matrix_check\", \"source\": \"P004\", \"destination\": \"P009\"}"}
+{"prompt": "Analyze downstream faults triggered by an isolated collapse of component P004.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P004\"}"}
+{"prompt": "Trace the cascading structural system impact if component P002 is compromised.", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P002\"}"}
+{"prompt": "What happens across the assembly loop if P005 experiences physical deformation?", "completion": "{\"action\": \"trace_downstream\", \"target\": \"P005\"}"}
+{"prompt": "What is the spring_rate profile assigned to component P004?", "completion": "{\"action\": \"lookup\", \"target\": \"P004\", \"property\": \"spring_rate\"}"}
+{"prompt": "System diagnostics inquiry: check material on item P009.", "completion": "{\"action\": \"lookup\", \"target\": \"P009\", \"property\": \"material\"}"}
