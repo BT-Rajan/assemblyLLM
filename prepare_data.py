@@ -35,6 +35,11 @@ TEMPLATES_LOOKUP = [
     "Extract telemetry values for property {prop} belonging to item {part}.",
     "System diagnostics inquiry: check {prop} on item {part}.",
     "Show the physical {prop} configuration metric for {part}.",
+    "What's the {prop} of {part}?",
+    "Can you tell me the {prop} for part {part}?",
+    "{part} - what is its {prop}?",
+    "I need the {prop} value for component {part}.",
+    "Does {part} have a specific {prop}? What is it?",
 ]
 
 TEMPLATES_TRACE = [
@@ -43,6 +48,10 @@ TEMPLATES_TRACE = [
     "Run a downstream dependency sweep starting from component {part}.",
     "What happens across the assembly loop if {part} experiences physical deformation?",
     "Analyze downstream faults triggered by an isolated collapse of component {part}.",
+    "If {part} breaks, what else stops working?",
+    "What relies on {part}?",
+    "What's downstream of {part}?",
+    "Which parts would be affected if {part} failed?",
 ]
 
 TEMPLATES_MATRIX = [
@@ -50,59 +59,140 @@ TEMPLATES_MATRIX = [
     "Identify the operational joint boundary interface code between {src} and {dst}.",
     "Check the codified design matrix connection mapping from {src} to {dst}.",
     "What mechanical or structural constraint links part {src} directly to {dst}?",
+    "How are {src} and {dst} connected?",
+    "Is there a direct connection from {src} to {dst}?",
+    "What's the interface between {src} and {dst}?",
 ]
 
+# Real users don't type snake_case field names - they ask about "thread specification",
+# not "thread_specification". Every lookup template gets a chance to use this natural form
+# instead of the raw dict key, so the model learns both instead of only the raw key it's
+# never actually going to see typed by an actual person.
+def natural_property_name(prop_key):
+    return prop_key.replace("_", " ")
+
+# 2b. NEGATIVE / OUT-OF-SCOPE EXAMPLES
+# Nothing above teaches the model what to do with a question outside these three action
+# types - broad "what's in this thing" questions, or genuinely unrelated questions. Without
+# examples like these, an out-of-scope prompt just gets best-effort character prediction
+# with no learned "this isn't something I handle" behavior at all.
+LISTING_PROMPTS = [
+    "What are the components of a ballpoint pen?",
+    "What parts make up this assembly?",
+    "List all the parts in this pen.",
+    "What is a ballpoint pen made of?",
+    "Give me a breakdown of every component in this device.",
+    "What pieces does this assembly consist of?",
+    "Show me the full parts list.",
+    "What are all the components of an ink pen?",
+    "How many parts does this pen have, and what are they?",
+    "What's inside this pen?",
+]
+
+UNSUPPORTED_PROMPTS = [
+    "What's the weather like today?",
+    "Who invented the ballpoint pen?",
+    "How much does this pen cost?",
+    "Can you write me a poem about pens?",
+    "What's your favorite color?",
+    "How do I file my taxes?",
+    "What time is it?",
+    "Tell me a joke.",
+    "What's the capital of France?",
+    "Can you recommend a good pen brand?",
+]
+
+def perturb(prompt):
+    """Cheap, honest lexical variations - not padding the count with literal duplicates."""
+    variants = {prompt}
+    if prompt.endswith("?"):
+        variants.add(prompt[:-1] + ".")
+    if prompt[0].isupper():
+        variants.add(prompt[0].lower() + prompt[1:])
+    variants.add("Quick question - " + prompt[0].lower() + prompt[1:])
+    return variants
+
 # 3. GENERATION PIPELINE ENGINE
-def generate_synthetic_dataset(output_size=3000):
-    dataset = []
-    
-    # Task Category 1: Flexible Lookup Generating
+def generate_synthetic_dataset(output_size=2500, eval_holdout_frac=0.15, seed=42):
+    rng = random.Random(seed)
+
+    # Each "family" below is a group of (prompt, completion) pairs that all share the same
+    # underlying entity (a specific part+property, a specific trace target, or a specific
+    # edge). Holding out entire families for eval - rather than randomly splitting
+    # individual prompt/completion pairs - is what makes the eval set actually measure
+    # generalization instead of just re-testing phrasings of answers already seen in
+    # training.
+    families = []
+
     for part_id, attrs in PARTS_REGISTRY.items():
         for prop_key in attrs.keys():
-            if prop_key == "name": continue
+            if prop_key == "name":
+                continue
+            target_json = json.dumps({"action": "lookup", "target": part_id, "property": prop_key})
+            prompts = set()
             for template in TEMPLATES_LOOKUP:
-                prompt = template.format(prop=prop_key, part=part_id)
-                target_json = {"action": "lookup", "target": part_id, "property": prop_key}
-                dataset.append({"prompt": prompt, "completion": json.dumps(target_json)})
-                
-    # Task Category 2: Trace Cascading Graph Loops
-    for part_id in PARTS_REGISTRY.keys():
-        for template in TEMPLATES_TRACE:
-            prompt = template.format(part=part_id)
-            target_json = {"action": "trace_downstream", "target": part_id}
-            dataset.append({"prompt": prompt, "completion": json.dumps(target_json)})
-            
-    # Task Category 3: Interface Interconnection Matrices
-    for edge in MATRIX_RELATIONS:
-        for template in TEMPLATES_MATRIX:
-            prompt = template.format(src=edge["source"], dst=edge["dest"])
-            target_json = {"action": "matrix_check", "source": edge["source"], "destination": edge["dest"]}
-            dataset.append({"prompt": prompt, "completion": json.dumps(target_json)})
+                natural = natural_property_name(prop_key)
+                prop_variant = natural if rng.random() < 0.5 else prop_key
+                prompts |= perturb(template.format(prop=prop_variant, part=part_id))
+            families.append([{"prompt": p, "completion": target_json} for p in prompts])
 
-    # Augment and balance by shuffling or introducing slight natural language noise
-    random.seed(42)
-    random.shuffle(dataset)
-    
-    # Trim or loop to exact request size boundaries
-    dataset = dataset[:output_size] if len(dataset) >= output_size else dataset
-    
-    # Split into a clean 90/10 train and validation division
-    split_idx = int(len(dataset) * 0.9)
-    train_data = dataset[:split_idx]
-    eval_data = dataset[split_idx:]
-    
+    for part_id in PARTS_REGISTRY.keys():
+        target_json = json.dumps({"action": "trace_downstream", "target": part_id})
+        prompts = set()
+        for template in TEMPLATES_TRACE:
+            prompts |= perturb(template.format(part=part_id))
+        families.append([{"prompt": p, "completion": target_json} for p in prompts])
+
+    for edge in MATRIX_RELATIONS:
+        target_json = json.dumps({"action": "matrix_check", "source": edge["source"], "destination": edge["dest"]})
+        prompts = set()
+        for template in TEMPLATES_MATRIX:
+            prompts |= perturb(template.format(src=edge["source"], dst=edge["dest"]))
+        families.append([{"prompt": p, "completion": target_json} for p in prompts])
+
+    # Negative examples are their own single-prompt "families" so they can still be held
+    # out for eval like everything else.
+    for p in LISTING_PROMPTS:
+        families.append([{"prompt": v, "completion": json.dumps({"action": "list_all_parts"})} for v in perturb(p)])
+    for p in UNSUPPORTED_PROMPTS:
+        families.append([{"prompt": v, "completion": json.dumps({"action": "unsupported"})} for v in perturb(p)])
+
+    rng.shuffle(families)
+    holdout_count = max(1, int(len(families) * eval_holdout_frac))
+    eval_families = families[:holdout_count]
+    train_families = families[holdout_count:]
+
+    train_data = [row for fam in train_families for row in fam]
+    eval_data = [row for fam in eval_families for row in fam]
+    rng.shuffle(train_data)
+    rng.shuffle(eval_data)
+
+    total_available = len(train_data) + len(eval_data)
+    if total_available < output_size:
+        print(f"Note: requested output_size={output_size}, but genuine template+entity diversity "
+              f"only supports {total_available} unique examples. Using all {total_available} rather "
+              f"than padding with literal duplicates, which would inflate the count without adding "
+              f"any real signal. Add more templates/entities to raise this ceiling.")
+    else:
+        # Only trim - never fabricate duplicate rows to hit a target above the real ceiling.
+        train_data = train_data[:int(output_size * (1 - eval_holdout_frac))]
+        eval_data = eval_data[:int(output_size * eval_holdout_frac)]
+
     # Serialize down to disk outputs
     os.makedirs("data", exist_ok=True)
-    
+
     with open("data/train.jsonl", "w") as f:
         for item in train_data:
             f.write(json.dumps(item) + "\n")
-            
+
     with open("data/eval.jsonl", "w") as f:
         for item in eval_data:
             f.write(json.dumps(item) + "\n")
-            
-    print(f"Data Generation complete. Saved {len(train_data)} training items & {len(eval_data)} verification items to data/ folder.")
+
+    print(f"Data Generation complete. Saved {len(train_data)} training items & {len(eval_data)} "
+          f"verification items to data/ folder ({len(train_families)} train / {len(eval_families)} "
+          f"eval entity families - eval families never share an entity with train, so eval loss "
+          f"actually reflects generalization).")
 
 if __name__ == "__main__":
     generate_synthetic_dataset(output_size=2500)

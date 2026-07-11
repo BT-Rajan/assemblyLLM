@@ -129,6 +129,25 @@
         "P009": { name: "Lower Barrel", material: "Polycarbonate", thread_specification: "M8 x 0.75 External", downstream: [] }
     };
 
+    // Direct interface connections between parts (mirrors MATRIX_RELATIONS in
+    // prepare_data.py / the networkx graph in inference.py). Used to actually validate
+    // matrix_check routes instead of unconditionally reporting success.
+    const MATRIX_EDGES = [
+        { source: "P001", destination: "P002", code: "F:AXIAL_PUSH", logic: "Axial downward force translation during thumb actuation" },
+        { source: "P001", destination: "P008", code: "C:SLEEVED_BY", logic: "P001 passes inside P008 restricting lateral wobble" },
+        { source: "P002", destination: "P003", code: "F:ROTATIONAL_CAM", logic: "Tooth geometry forces P003 to rotate and step between channels" },
+        { source: "P003", destination: "P005", code: "F:AXIAL_PUSH", logic: "P003 directly drives the rear shoulder of the ink cartridge down" },
+        { source: "P004", destination: "P005", code: "F:COMPRESSION", logic: "Spring anchors onto an extruded shoulder on P005 counteracting downward force" },
+        { source: "P004", destination: "P009", code: "M:BUTT_JOINT", logic: "Forward edge of spring rests rigidly inside the internal tip step of P009" },
+        { source: "P005", destination: "P006", code: "M:PRESS_FIT", logic: "Interference fit sealing ink passage via friction lock" },
+        { source: "P006", destination: "P007", code: "C:CRIMPED_HOLD", logic: "The brass casing is rolled slightly over the equator of the ball to lock it in place" },
+        { source: "P008", destination: "P009", code: "M:THREADS", logic: "Screwed together securely via matching internal/external threads" },
+    ];
+
+    function findEdge(source, destination) {
+        return MATRIX_EDGES.find(e => e.source === source && e.destination === destination) || null;
+    }
+
     // Broad "what are the parts / what's it made of" questions have no single target
     // component code and were never part of the model's training distribution (every
     // training example asks about one specific Pxxx part - see data/train.jsonl). Rather
@@ -180,7 +199,7 @@
     }
 
     const KNOWN_KEYS = ["action", "target", "property", "source", "destination"];
-    const KNOWN_ACTIONS = ["lookup", "trace_downstream", "matrix_check"];
+    const KNOWN_ACTIONS = ["lookup", "trace_downstream", "matrix_check", "list_all_parts", "unsupported"];
 
     function normalizeCommand(raw) {
         const normalized = {};
@@ -384,16 +403,45 @@
                 return;
             }
 
-            // Step 6: Route parameters if JSON parsed successfully
+            // Step 6: Route parameters if JSON parsed successfully. Dispatch on action first -
+            // list_all_parts/unsupported don't have (or need) a target part code at all, so
+            // they can't go through the same target-first check as lookup/trace_downstream.
+            if (command.action === "list_all_parts") {
+                renderFullPartsList(modelDiv, graphDiv);
+                return;
+            }
+
+            if (command.action === "unsupported") {
+                graphDiv.innerText = `[OUT OF SCOPE] The model determined this question isn't something the assembly router handles (not a part lookup, downstream trace, or interface check).`;
+                return;
+            }
+
+            if (command.action === "matrix_check") {
+                const source = command.source ? command.source.toUpperCase() : null;
+                const destination = command.destination ? command.destination.toUpperCase() : null;
+                if (!PARTS_GRAPH[source] || !PARTS_GRAPH[destination]) {
+                    graphDiv.innerText = `[ROUTING ERROR] Isolated interface code '${source} -> ${destination}' references a part missing from the physical component schema inventory.`;
+                    return;
+                }
+                const edge = findEdge(source, destination);
+                if (edge) {
+                    graphDiv.innerText = `[INTERCEPTOR MATRIX TRUTH] MATRIX_CHECK successful:\nConnection ${source} (${PARTS_GRAPH[source].name}) -> ${destination} (${PARTS_GRAPH[destination].name})\nInterface Code: ${edge.code}\nLogic: ${edge.logic}`;
+                } else {
+                    graphDiv.innerText = `[NO CONNECTION FOUND] There is no direct recorded interface from ${source} (${PARTS_GRAPH[source].name}) to ${destination} (${PARTS_GRAPH[destination].name}) in the assembly matrix. (Note: this model is small and occasionally guesses a plausible-but-wrong destination - if this looks off, double check the part codes.)`;
+                }
+                return;
+            }
+
+            // lookup / trace_downstream both require a single valid target part code.
             const target = command.target ? command.target.toUpperCase() : null;
-            
+
             if (!PARTS_GRAPH[target]) {
                 graphDiv.innerText = `[ROUTING ERROR] Isolated part target code '${target}' is missing from physical component schema inventory registries.`;
                 return;
             }
-            
+
             const partInfo = PARTS_GRAPH[target];
-            
+
             if (command.action === "lookup") {
                 const validProps = Object.keys(partInfo).filter(k => k !== 'name' && k !== 'downstream');
                 const property = validProps.includes(command.property)
@@ -403,8 +451,6 @@
                 graphDiv.innerText = `[INTERCEPTOR SEED TRUTH] DB_LOOKUP successful:\nComponent: ${target} (${partInfo.name})\nProperty Requested: '${property}'\nValue: ${value}`;
             } else if (command.action === "trace_downstream") {
                 graphDiv.innerText = `[INTERCEPTOR GRAPH TRUTH] CASCADE_TRACE analytical tracking successful:\nComponent Fault Node: ${target} (${partInfo.name})\nDownstream Operational Systems Impact Risks: ${JSON.stringify(partInfo.downstream)}`;
-            } else if (command.action === "matrix_check") {
-                graphDiv.innerText = `[INTERCEPTOR MATRIX TRUTH] MATRIX_CHECK tracking successful:\nInterface Linkage Evaluated. Checking specific structural matrix logic nodes.`;
             } else {
                 graphDiv.innerText = `[COMPLIANCE ALERT] Command action target parsed successfully but sequence method rules are unhandled.`;
             }
