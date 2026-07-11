@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Assembly Matrix Inquiry System</title>
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
     <style>
@@ -101,6 +104,8 @@
 
     <h3>2. Interceptor Graph Registry Ground Truth</h3>
     <div id="graphOutput" class="box truth">Awaiting deterministic system confirmation...</div>
+
+    <div style="margin-top:20px; font-size:11px; color:#999; text-align:right;">Build: 2026-07-11d</div>
 </div>
 
 <script>
@@ -257,6 +262,7 @@
         const modelDiv = document.getElementById('modelOutput');
         const graphDiv = document.getElementById('graphOutput');
         const submitBtn = document.getElementById('submitBtn');
+        const statusDiv = document.getElementById('systemStatus');
         
         if (!inputPrompt) {
             alert("Please input an assembly engineering inquiry first.");
@@ -273,7 +279,10 @@
         // since GitHub Pages doesn't send the cross-origin-isolation headers WASM threading
         // needs, so it runs single-threaded).
         submitBtn.disabled = true;
+        submitBtn.innerText = "Analyzing... (this takes ~15-30s)";
         const genStart = Date.now();
+        statusDiv.className = "status-bar status-loading";
+        statusDiv.innerText = "⏳ Generating response - token 0 of up to " + MAX_NEW_TOKENS + " (0.0s elapsed). This runs entirely in your browser and takes ~15-30s.";
         modelDiv.innerText = "Running autoregressive token translation passes... (token 0, 0.0s)";
         graphDiv.innerText = "Awaiting interceptor routing token verification...";
 
@@ -343,6 +352,7 @@
                 const elapsedSec = ((Date.now() - genStart) / 1000).toFixed(1);
                 const tokenCount = cursor - promptLength;
                 modelDiv.innerText = `Running autoregressive token translation passes... (token ${tokenCount}, ${elapsedSec}s)\n\n${generatedJson}`;
+                statusDiv.innerText = `⏳ Generating response - token ${tokenCount} of up to ${MAX_NEW_TOKENS} (${elapsedSec}s elapsed). This runs entirely in your browser and takes ~15-30s.`;
             }
 
             // Step 5: Intercept and validate JSON string formatting. The model occasionally
@@ -405,6 +415,9 @@
             graphDiv.innerText = `[PARSING FAILURE DETECTED]\nAn unexpected error halted text token compilation. Check your console log inputs.`;
         } finally {
             submitBtn.disabled = false;
+            submitBtn.innerText = "Analyze Assembly State";
+            statusDiv.className = "status-bar status-ready";
+            statusDiv.innerText = "✓ ONNX WebAssembly Runtime Active. Ready for next inquiry.";
         }
     }
 
