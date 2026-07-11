@@ -142,6 +142,53 @@
         graphDiv.innerText = `[PARTS REGISTRY] This assembly is made up of ${lines.length} components:\n\n${lines.join('\n')}`;
     }
 
+    // Character-level tiny models occasionally flub a single character even when the
+    // overall structure is right (e.g. key "actin" instead of "action", or a property
+    // value like "colonk" instead of "color"). Rather than let a one-character typo sink
+    // an otherwise-correct route, nudge close-but-not-exact keys/values back onto the
+    // nearest known option within a small edit-distance tolerance.
+    function levenshtein(a, b) {
+        const m = a.length, n = b.length;
+        const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+        for (let i = 0; i <= m; i++) dp[i][0] = i;
+        for (let j = 0; j <= n; j++) dp[0][j] = j;
+        for (let i = 1; i <= m; i++) {
+            for (let j = 1; j <= n; j++) {
+                dp[i][j] = a[i - 1] === b[j - 1]
+                    ? dp[i - 1][j - 1]
+                    : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+            }
+        }
+        return dp[m][n];
+    }
+
+    // Returns the closest candidate within `maxDist` edits, or null if nothing is close enough.
+    function closestMatch(value, candidates, maxDist) {
+        if (!value) return null;
+        const v = String(value).toLowerCase();
+        let best = null, bestDist = Infinity;
+        for (const c of candidates) {
+            const d = levenshtein(v, c.toLowerCase());
+            if (d < bestDist) { bestDist = d; best = c; }
+        }
+        return bestDist <= maxDist ? best : null;
+    }
+
+    const KNOWN_KEYS = ["action", "target", "property", "source", "destination"];
+    const KNOWN_ACTIONS = ["lookup", "trace_downstream", "matrix_check"];
+
+    function normalizeCommand(raw) {
+        const normalized = {};
+        for (const key of Object.keys(raw)) {
+            const fixedKey = KNOWN_KEYS.includes(key) ? key : (closestMatch(key, KNOWN_KEYS, 2) || key);
+            normalized[fixedKey] = raw[key];
+        }
+        if (normalized.action && !KNOWN_ACTIONS.includes(normalized.action)) {
+            normalized.action = closestMatch(normalized.action, KNOWN_ACTIONS, 2) || normalized.action;
+        }
+        return normalized;
+    }
+
     // Initialize and boot up dependencies asynchronously 
     async function initSystem() {
         const statusDiv = document.getElementById('systemStatus');
@@ -314,9 +361,11 @@
                     throw new Error("No JSON object boundaries found");
                 }
                 command = JSON.parse(rawStr.slice(start, end + 1));
+                command = normalizeCommand(command);
 
-                // Show the clean, parsed route - not the model's raw stream (which can
-                // include a little leading noise before it settles into valid JSON).
+                // Show the clean, parsed (and typo-corrected) route - not the model's raw
+                // stream, which can include a little leading noise before it settles into
+                // valid JSON.
                 modelDiv.innerText = JSON.stringify(command, null, 2);
             } catch (jsonErr) {
                 console.error("Malformed JSON payload string:", generatedJson);
@@ -336,7 +385,10 @@
             const partInfo = PARTS_GRAPH[target];
             
             if (command.action === "lookup") {
-                const property = command.property;
+                const validProps = Object.keys(partInfo).filter(k => k !== 'name' && k !== 'downstream');
+                const property = validProps.includes(command.property)
+                    ? command.property
+                    : (closestMatch(command.property, validProps, 2) || command.property);
                 const value = partInfo[property] || "Property descriptor key not found";
                 graphDiv.innerText = `[INTERCEPTOR SEED TRUTH] DB_LOOKUP successful:\nComponent: ${target} (${partInfo.name})\nProperty Requested: '${property}'\nValue: ${value}`;
             } else if (command.action === "trace_downstream") {
